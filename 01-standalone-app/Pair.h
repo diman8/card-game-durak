@@ -1,6 +1,7 @@
 #ifndef PAIR_H
 #define PAIR_H
-
+#include "Card.h"
+#include <vector>
 
 class Pair
 {
@@ -9,7 +10,7 @@ class Pair
 public:
     Pair();
     Pair(Card first);
-    int Beat(Card sec);
+    int Beat(Card sec, int trump);
     std::vector<Card> Contains();
 };
 

@@ -5,10 +5,9 @@
 
 class Turn
 {
-    std::vector<Pair> available;
 public:
+    std::vector<Pair> available;
     Turn();
-    Turn()
 };
 
 #endif // TURN_H

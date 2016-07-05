@@ -5,14 +5,14 @@
 
 class Player
 {
-    static int count=0;
+    static int count;
 //    socket
 public:
     int id;
-    string name;
+    std::wstring name;
     std::vector<Card> hand;
     Player();
-    Player(std::string a);
+    Player(std::wstring a);
 //    Player(std::string a, socket something);
     int Take(int count, Deck source);
     Card Thrown(); //надо-ли?

@@ -1,5 +1,7 @@
 #include <iostream>
 #include <Deck.h>
+#include <Turn.h>
+#include <Player.h>
 #include <cstdlib>
 using namespace std;
 
@@ -21,18 +23,24 @@ int main(int argc, char *argv[])
 //        }
 //    }
 
-    vector<Card> player1 = my.Take(6);
-    vector<Card> player2 = my.Take(6);
+    std::vector<Player> players(2);
+    players[0] = Player(L"Vasya");
+    players[0].Take(6,my);
+    players[1] = Player(L"Petya");
+    players[1].Take(6,my);
 
     //GAEM
-
-    wcout << L"Player1 has: ";
-    for (int i=0; i<player1.size(); i++)
-        wcout << player1[i].Print2() << ", ";
-    wcout << L"\nPlayer2 has: ";
-    for (int i=0; i<player2.size(); i++)
-        wcout << player2[i].Print2() << ", ";
+    for (int i=0; i < players.size(); i++)
+    {
+        wcout << L"Player" << players[i].name << " has: ";
+        for (int j=0; j<players[i].hand.size(); j++)
+        {
+            wcout << players[i].hand[j].Print2() << ", ";
+        }
+        wcout << endl;
+    }
     //p1 turn
+
 
 
 

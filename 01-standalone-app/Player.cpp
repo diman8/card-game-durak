@@ -1,14 +1,16 @@
 #include "Player.h"
 
+int Player::count=0;
+
 Player::Player()
 {
     id = count++;
 }
 
-Player::Player(std::string a)
+Player::Player(std::wstring a)
 {
     id = count++;
-    name = a;
+    this->name = a;
 }
 
 int Player::Take(int count, Deck source)
@@ -16,6 +18,14 @@ int Player::Take(int count, Deck source)
     //нужна проверка на то, что столько карт можно взять из колоды
     std::vector<Card> temp = source.Take(count);
     //соединяем 2 вектора
-    temp.insert(hand.end(), std::make_move_iterator(temp.begin()), std::make_move_iterator(temp.end()));
+    if(hand.size()!=0)
+        temp.insert(hand.end(), std::make_move_iterator(temp.begin()), std::make_move_iterator(temp.end()));
+    else
+    {
+        hand=temp;
+    }
+    return 0;
+    //temp.insert(hand.end(), std::make_move_iterator(temp.begin()), std::make_move_iterator(temp.end()));
 }
+
 
