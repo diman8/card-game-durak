@@ -2,6 +2,7 @@
 #define PLAYER_H
 #include <vector>
 #include <Deck.h>
+#include "Pair.h"
 
 class Player
 {
@@ -14,8 +15,10 @@ public:
     Player();
     Player(std::wstring a);
 //    Player(std::string a, socket something);
-    int Take(int count, Deck source);
-    Card Thrown(); //надо-ли?
+    int Take(int count, Deck &source);
+    int Take(std::vector<Pair> heap);
+    Card Thrown(bool first); //надо-ли?
+    int Answer(Pair &current, int trump);
 
 };
 

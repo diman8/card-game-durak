@@ -6,13 +6,13 @@ CONFIG -= qt
 SOURCES += main.cpp \
     Card.cpp \
     Deck.cpp \
-    Turn.cpp \
     Pair.cpp \
-    Player.cpp
+    Player.cpp \
+    Table.cpp
 
 HEADERS += \
     Card.h \
     Deck.h \
-    Turn.h \
     Pair.h \
-    Player.h
+    Player.h \
+    Table.h

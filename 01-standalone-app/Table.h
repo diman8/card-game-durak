@@ -1,13 +1,13 @@
-#ifndef TURN_H
-#define TURN_H
+#ifndef TABLE_H
+#define TABLE_H
 #include <vector>
 #include "Pair.h"
 
-class Turn
+class Table
 {
 public:
     std::vector<Pair> available;
-    Turn();
+    Table();
 };
 
-#endif // TURN_H
+#endif // TABLE_H

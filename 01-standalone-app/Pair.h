@@ -5,9 +5,9 @@
 
 class Pair
 {
+public:
     Card first;
     Card second;
-public:
     Pair();
     Pair(Card first);
     int Beat(Card sec, int trump);

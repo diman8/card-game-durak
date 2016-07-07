@@ -7,11 +7,12 @@ Pair::Pair(){}
 Pair::Pair(Card first)
 {
     this->first = first;
+    //this->second = NULL;
 }
 
 int Pair::Beat(Card sec, int trump)
 {
-    if (this->first.Fight(sec, trump))
+    if(sec.Fight(this->first, trump))
     {
         this->second = sec;
         return 0;
@@ -26,6 +27,6 @@ std::vector<Card> Pair::Contains()
 {
     std::vector<Card> temp;
     temp.push_back(first);
-    temp.push_back(second);
+    //if (second != NULL) temp.push_back(second);
     return temp;
 }
