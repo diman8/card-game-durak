@@ -27,5 +27,5 @@ std::string Card::Print()
 
 std::wstring Card::Print2()
 {
-    return std::wstring(this->faces[face] + this->suits[suit]);
+    return std::wstring(cfaces[face] + csuits[suit]);
 }

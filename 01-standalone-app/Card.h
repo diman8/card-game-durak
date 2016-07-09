@@ -7,11 +7,11 @@
 
 class Card
 {
-    std::wstring faces[13] = {L"2", L"3", L"4", L"5", L"6", L"7", L"8", L"9", L"T", L"J", L"Q", L"K", L"A"};
-    std::wstring suits[4] = {L"♣",L"♦",L"♥",L"♠"};
+public:
+    std::wstring cfaces[13] = {L"2", L"3", L"4", L"5", L"6", L"7", L"8", L"9", L"T", L"J", L"Q", L"K", L"A"};
+    std::wstring csuits[4] = {L"♣",L"♦",L"♥",L"♠"};
     unsigned short face;
     unsigned short suit;
-public:
     Card();
     Card(unsigned short face, unsigned short suit);
     short Fight(Card &a, unsigned short trump);

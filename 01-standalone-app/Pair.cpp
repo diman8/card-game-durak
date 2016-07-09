@@ -2,23 +2,21 @@
 #include "Card.h"
 #include <vector>
 
-Pair::Pair(){}
-
-Pair::Pair(Card first)
+Pair::Pair(Card* first)
 {
     this->first = first;
-    //this->second = NULL;
+    this->second = nullptr;
 }
 
-int Pair::Beat(Card sec, int trump)
+int Pair::Beat(Card* sec, int trump)
 {
-    if(sec.Fight(this->first, trump))
+    if(sec->Fight(*(this->first), trump))
     {
-        this->second = sec;
         return 0;
     }
     else
     {
+        this->second = sec;
         return 1;
     }
 }
@@ -26,7 +24,18 @@ int Pair::Beat(Card sec, int trump)
 std::vector<Card> Pair::Contains()
 {
     std::vector<Card> temp;
-    temp.push_back(first);
-    //if (second != NULL) temp.push_back(second);
+    Card tmp = *first;
+    temp.push_back(tmp);
+    if (second != nullptr)
+    {
+        Card tmp2 = *second;
+        temp.push_back(tmp2);
+    }
     return temp;
+}
+
+Pair::~Pair()
+{
+    delete first;
+    if (second != nullptr) delete second;
 }

@@ -47,14 +47,43 @@ int Player::Take(int count, Deck &source)
     //temp.insert(hand.end(), std::make_move_iterator(temp.begin()), std::make_move_iterator(temp.end()));
 }
 
-Card Player::Thrown(bool first)
+Card* Player::Thrown() //вызывается при 1ом ходе
 {
     while(1)
     {
         int choise=0;
         wcout << this->name << L": choose card to thrown" << endl;
-        if (!first)
-            wcout << L"-1. Nothing" << endl;
+        for (int i=0; i<hand.size();i++)
+        {
+            wcout << i << ". " << hand[i].Print2() << endl;
+        }
+        cin >> choise;
+        if (choise >= 0)
+        {
+            Card* temp = new Card(hand[choise]);
+            hand.erase(hand.begin() + choise);
+            return temp;
+        }
+    }
+}
+
+Card* Player::Thrown(vector<Pair> &heap) //при 2ых и последующих
+{
+    vector<Card> stack;
+    for (int i=0; i<heap.size();i++)
+    {
+        vector<Card> tmp = heap[i].Contains();
+        stack.insert(stack.end(),tmp.begin(),tmp.end());
+    }
+    while(1)
+    {
+        int choise=0;
+        wcout << L"Cards on table:";
+        for (int i=0; i<stack.size();i++)
+            wcout << stack[i].Print2() << L" ";
+        wcout << endl;
+        wcout << this->name << L": choose card to thrown" << endl;
+        wcout << L"-1. Nothing" << endl;
         for (int i=0; i<hand.size();i++)
         {
             wcout << i << ". " << hand[i].Print2() << endl;
@@ -62,14 +91,17 @@ Card Player::Thrown(bool first)
         cin >> choise;
         if (choise != -1)
         {
-            Card temp = hand[choise];
-            hand.erase(hand.begin() + choise);
-            return temp;
+            for (int i=0; i<stack.size();i++)
+                if (hand[choise].face == stack[i].face)
+                {
+                    Card* temp = new Card(hand[choise]);
+                    hand.erase(hand.begin() + choise);
+                    return temp;
+                }
         }
         else
         {
-            if (first)
-                return Card(); //TODO!!!
+            return nullptr;
         }
     }
 }
@@ -79,17 +111,18 @@ int Player::Answer(Pair &current, int trump)
     while(1)
     {
         int choise=0;
-        wcout << this->name << L": choose card to answer for " << current.first.Print2() << endl;
+        wcout << this->name << L": choose card to answer for " << current.first->Print2() << endl;
         wcout << L"-1. Give up" << endl;
         for (int i=0; i<hand.size();i++)
         {
-            wcout << i << ". " << hand[i].Print2() << endl;
+            wcout << i << L". " << hand[i].Print2() << endl;
         }
         cin >> choise;
         if (choise != -1)
         {
-            if (current.Beat(hand[choise], trump))
+            if (current.Beat(&hand[choise], trump))
             {
+                hand.erase(hand.begin() + choise);
                 return 0;
             }
         }

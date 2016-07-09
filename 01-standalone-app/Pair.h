@@ -6,11 +6,12 @@
 class Pair
 {
 public:
-    Card first;
-    Card second;
-    Pair();
-    Pair(Card first);
-    int Beat(Card sec, int trump);
+    bool seccard;
+    Card* first;
+    Card* second;
+    Pair(Card* first);
+    ~Pair();
+    int Beat(Card* sec, int trump);
     std::vector<Card> Contains();
 };
 
