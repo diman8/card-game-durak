@@ -1,14 +1,15 @@
 #include "Pair.h"
 #include "Card.h"
 #include <vector>
+#include <memory>
 
-Pair::Pair(Card* first)
+Pair::Pair(std::shared_ptr<Card> first)
 {
     this->first = first;
     this->second = nullptr;
 }
 
-int Pair::Beat(Card* sec, int trump)
+int Pair::Beat(std::shared_ptr<Card> sec, int trump)
 {
     if(sec->Fight(*(this->first), trump))
     {
@@ -24,18 +25,13 @@ int Pair::Beat(Card* sec, int trump)
 std::vector<Card> Pair::Contains()
 {
     std::vector<Card> temp;
-    Card tmp = *first;
-    temp.push_back(tmp);
+    temp.push_back(*first);
     if (second != nullptr)
     {
-        Card tmp2 = *second;
-        temp.push_back(tmp2);
+        temp.push_back(*second);
     }
     return temp;
 }
 
 Pair::~Pair()
-{
-    delete first;
-    if (second != nullptr) delete second;
-}
+{}

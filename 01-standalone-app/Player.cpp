@@ -47,7 +47,7 @@ int Player::Take(int count, Deck &source)
     //temp.insert(hand.end(), std::make_move_iterator(temp.begin()), std::make_move_iterator(temp.end()));
 }
 
-Card* Player::Thrown() //вызывается при 1ом ходе
+std::shared_ptr<Card> Player::Thrown() //вызывается при 1ом ходе
 {
     while(1)
     {
@@ -60,14 +60,14 @@ Card* Player::Thrown() //вызывается при 1ом ходе
         cin >> choise;
         if (choise >= 0)
         {
-            Card* temp = new Card(hand[choise]);
+            std::shared_ptr<Card> temp(new Card(hand[choise]));
             hand.erase(hand.begin() + choise);
             return temp;
         }
     }
 }
 
-Card* Player::Thrown(vector<Pair> &heap) //при 2ых и последующих
+std::shared_ptr<Card> Player::Thrown(vector<Pair> &heap) //при 2ых и последующих
 {
     vector<Card> stack;
     for (int i=0; i<heap.size();i++)
@@ -78,7 +78,7 @@ Card* Player::Thrown(vector<Pair> &heap) //при 2ых и последующи�
     while(1)
     {
         int choise=0;
-        wcout << L"Cards on table:";
+        wcout << L"Cards on table: ";
         for (int i=0; i<stack.size();i++)
             wcout << stack[i].Print2() << L" ";
         wcout << endl;
@@ -94,7 +94,7 @@ Card* Player::Thrown(vector<Pair> &heap) //при 2ых и последующи�
             for (int i=0; i<stack.size();i++)
                 if (hand[choise].face == stack[i].face)
                 {
-                    Card* temp = new Card(hand[choise]);
+                    std::shared_ptr<Card> temp(new Card(hand[choise]));
                     hand.erase(hand.begin() + choise);
                     return temp;
                 }
@@ -120,7 +120,7 @@ int Player::Answer(Pair &current, int trump)
         cin >> choise;
         if (choise != -1)
         {
-            if (current.Beat(&hand[choise], trump))
+            if (current.Beat(std::make_shared<Card>(hand[choise]), trump))
             {
                 hand.erase(hand.begin() + choise);
                 return 0;

@@ -3,6 +3,7 @@
 #include "Table.h"
 #include "Player.h"
 #include <cstdlib>
+#include <memory>
 using namespace std;
 
 int main(int argc, char *argv[])
@@ -56,7 +57,7 @@ int main(int argc, char *argv[])
 //            apl кладет карту(ы), проверяя есть-ли она в pair_collection (если он не пустой), формируется pair
 //            vpl дополняет pair, либо берет все карты из нее.
 //        APL LOOP END
-        Card* temp = players[apl].Thrown();
+        shared_ptr<Card> temp = players[apl].Thrown();
         heap.push_back(Pair(temp));
         while(1)
         {
@@ -65,7 +66,7 @@ int main(int argc, char *argv[])
                 players[vpl].Take(heap);
                 break;
             }
-            Card* temp = players[apl].Thrown(heap);
+            shared_ptr<Card> temp = players[apl].Thrown(heap);
             if (temp == nullptr)
             {
                 break;
