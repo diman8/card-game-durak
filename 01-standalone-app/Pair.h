@@ -7,7 +7,6 @@
 class Pair
 {
 public:
-    bool seccard;
     std::shared_ptr<Card> first;
     std::shared_ptr<Card> second;
     Pair(std::shared_ptr<Card> first);
