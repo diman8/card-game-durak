@@ -14,6 +14,7 @@ public:
     Card Take();
     std::vector<Card> Take(int i);
     Card& operator[](int i);
+    int Add(Card a);
 };
 
 #endif // DECK_H

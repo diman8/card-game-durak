@@ -67,3 +67,10 @@ Card& Deck::operator [](int i)
 {
     return stack->at(i);
 }
+
+int Deck::Add(Card a)
+{
+    //stack->push_back(a);
+    stack->insert(stack->begin(),a);
+    return 0;
+}

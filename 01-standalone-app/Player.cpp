@@ -5,10 +5,7 @@ using namespace std;
 
 int Player::count=0;
 
-Player::Player()
-{
-    id = count++;
-}
+Player::Player(){}
 
 Player::Player(std::wstring a)
 {
@@ -129,6 +126,18 @@ int Player::Answer(Pair &current, int trump)
         else
         {
             return 1;
+        }
+    }
+}
+
+int Player::Sort()
+{
+    for (int i=0; i<hand.size(); i++)
+    {
+        for (int j=i; j<hand.size(); j++)
+        {
+            if (hand[i].id > hand[j].id)
+                std::swap<Card>(hand[i],hand[j]);
         }
     }
 }

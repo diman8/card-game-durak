@@ -22,7 +22,7 @@ public:
     std::shared_ptr<Card> Thrown();
     std::shared_ptr<Card> Thrown(std::vector<Pair> &heap);
     int Answer(Pair &current, int trump);
-
+    int Sort();
 };
 
 #endif // PLAYER_H

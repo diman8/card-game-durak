@@ -9,7 +9,7 @@ using namespace std;
 int main(int argc, char *argv[])
 {
     setlocale(LC_CTYPE, "");
-    Deck my(6,4,0);
+    Deck my(13,4,0);
     my.Shuffle();
 
     std::vector<Player> players(3);
@@ -23,12 +23,14 @@ int main(int argc, char *argv[])
     for (Player &pl:players)
     {
         pl.Take(6,my);
+        pl.Sort();
     }
 
     //Выбирается trump.
     Card tcard = my.Take();
     int trump = tcard.suit;
     wcout << L"Current trump:" << tcard.Print2() << endl;
+    my.Add(tcard);
 
     //Выбирается player с trump наим. значения. Это apl.
     int tmin=100;
@@ -68,6 +70,8 @@ int main(int argc, char *argv[])
                 vpl_take = true;
                 break;
             }
+            else if (players[vpl].hand.size() == 0)
+                break;
             shared_ptr<Card> temp = players[apl].Thrown(heap);
             if (temp == nullptr)
             {
@@ -82,11 +86,11 @@ int main(int argc, char *argv[])
 //            vpl отбивается, либо забирает все pair со стола.
 //            Если отбивается - все pair уходят в trash.
 //        ALL LOOP END
-        if (!vpl_take)
+        if ((!vpl_take)&&(players[vpl].hand.size()!=0))
         {
             while(1)
             {
-                for (int i=(apl+2)%players.size(); i!=apl+1; i=(i+1)%players.size())
+                for (int i=(apl+2)%players.size(); i!=(apl+1)%players.size(); i=(i+1)%players.size())
                 {
                     if (i == vpl) continue;
 
@@ -109,6 +113,8 @@ int main(int argc, char *argv[])
                         vpl_take = true;
                         break;
                     }
+                    else if (players[vpl].hand.size() == 0)
+                        break;
                 }
                 else
                 {
@@ -121,29 +127,38 @@ int main(int argc, char *argv[])
         //Идет добор cards до 6ти (если это возможно).
         //Если у player нет cards - он выходит из players.
         wcout << L"End of a turn" << endl;
-        for (int i=apl; i!=(apl-1)%players.size(); i=(i+1)%players.size())
+        //apl берет первым
+        if (players[apl].hand.size() < 6)
+            players[apl].Take((6-players[apl].hand.size()),my);
+
+        for (int i=(apl+2)%players.size(); i!=apl; i=(i+1)%players.size())
         {
             if (i == vpl) continue;
 
             if (players[i].hand.size() < 6)
                 players[i].Take((6-players[i].hand.size()),my);
+        }
+        //vpl берет последним
+        if (players[vpl].hand.size() < 6)
+            players[vpl].Take((6-players[vpl].hand.size()),my);
+
+        //удаление игрока из вектора
+        for (int i=0;i<players.size();i++)
+        {
             if (players[i].hand.size() == 0)
             {
                 players.erase(players.begin() + i);
-                if(i <= apl)
+                if (i <= apl)
+                {
                     apl = (apl-1)%players.size();
+                    if((vpl < apl)&&(apl==i))
+                        vpl = (vpl)%players.size();
+                    else
+                        vpl = (vpl-1)%players.size();
+                }
+                i=(i-1)%players.size();
             }
         }
-        //Берет vpl
-        if (players[vpl].hand.size() < 6)
-            players[vpl].Take((6-players[vpl].hand.size()),my);
-        if (players[vpl].hand.size() == 0)
-        {
-            players.erase(players.begin() + vpl);
-            if(vpl < apl)
-                apl = (apl-1)%players.size();
-        }
-
 //        Когда в players остался 1 player - он считается проигравшим.
         if (players.size() == 1)
         {

@@ -1,8 +1,11 @@
 #include "Card.h"
 
+int Card::count=0;
+
 Card::Card(){}
 Card::Card(unsigned short face, unsigned short suit)
 {
+    id = count++;
     this->face=face;
     this->suit=suit;
 }
