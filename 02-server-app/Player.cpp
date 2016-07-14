@@ -1,0 +1,144 @@
+#include "Player.h"
+#include <iostream>
+#include "Pair.h"
+using namespace std;
+
+int Player::count=0;
+
+Player::Player(){}
+
+Player::Player(std::string a, int socket)
+{
+    id = count++;
+    this->name = a;
+    this->socket = socket;
+}
+
+int Player::Take(std::vector<Pair> heap)
+{
+    for (int i=0; i<heap.size(); i++)
+    {
+        vector<Card> temp = heap[i].Contains();
+        hand.insert(hand.end(), std::make_move_iterator(temp.begin()), std::make_move_iterator(temp.end()));
+    }
+}
+
+int Player::Take(int count, Deck &source)
+{
+    std::vector<Card> temp;
+    //нужна проверка на то, что столько карт можно взять из колоды
+    for (int i=0; i<count; i++)
+    {
+        if (source.size != 0)
+            temp.push_back(source.Take());
+    }
+    //соединяем 2 вектора
+
+    if((hand.size()!=0)&&(temp.size()!=0))
+        hand.insert(hand.end(), temp.begin(), temp.end());
+        //temp.insert(hand.end(), std::make_move_iterator(temp.begin()), std::make_move_iterator(temp.end()));
+    else if (hand.size()==0)
+    {
+        hand=temp;
+    }
+    return 0;
+    //temp.insert(hand.end(), std::make_move_iterator(temp.begin()), std::make_move_iterator(temp.end()));
+}
+
+std::shared_ptr<Card> Player::Thrown() //вызывается при 1ом ходе
+{
+    while(1)
+    {
+        int choise=0;
+        cout << this->name << ": choose card to thrown" << endl;
+        for (int i=0; i<hand.size();i++)
+        {
+            cout << i << ". " << hand[i].Print2() << endl;
+        }
+        cin >> choise;
+        if (choise >= 0)
+        {
+            std::shared_ptr<Card> temp(new Card(hand[choise]));
+            hand.erase(hand.begin() + choise);
+            return temp;
+        }
+    }
+}
+
+std::shared_ptr<Card> Player::Thrown(vector<Pair> &heap) //при 2ых и последующих
+{
+    vector<Card> stack;
+    for (int i=0; i<heap.size();i++)
+    {
+        vector<Card> tmp = heap[i].Contains();
+        stack.insert(stack.end(),tmp.begin(),tmp.end());
+    }
+    while(1)
+    {
+        int choise=0;
+        cout << "Cards on table: ";
+        for (int i=0; i<stack.size();i++)
+            cout << stack[i].Print2() << " ";
+        cout << endl;
+        cout << this->name << ": choose card to thrown" << endl;
+        cout << "-1. Nothing" << endl;
+        for (int i=0; i<hand.size();i++)
+        {
+            cout << i << ". " << hand[i].Print2() << endl;
+        }
+        cin >> choise;
+        if (choise != -1)
+        {
+            for (int i=0; i<stack.size();i++)
+                if (hand[choise].face == stack[i].face)
+                {
+                    std::shared_ptr<Card> temp(new Card(hand[choise]));
+                    hand.erase(hand.begin() + choise);
+                    return temp;
+                }
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
+}
+
+int Player::Answer(Pair &current, int trump)
+{
+    while(1)
+    {
+        int choise=0;
+        cout << this->name << ": choose card to answer for " << current.first->Print2() << endl;
+        cout << "-1. Give up" << endl;
+        for (int i=0; i<hand.size();i++)
+        {
+            cout << i << ". " << hand[i].Print2() << endl;
+        }
+        cin >> choise;
+        if (choise != -1)
+        {
+            if (current.Beat(std::make_shared<Card>(hand[choise]), trump))
+            {
+                hand.erase(hand.begin() + choise);
+                return 0;
+            }
+        }
+        else
+        {
+            return 1;
+        }
+    }
+}
+
+int Player::Sort()
+{
+    for (int i=0; i<hand.size(); i++)
+    {
+        for (int j=i; j<hand.size(); j++)
+        {
+            if (hand[i].id > hand[j].id)
+                std::swap<Card>(hand[i],hand[j]);
+        }
+    }
+}
