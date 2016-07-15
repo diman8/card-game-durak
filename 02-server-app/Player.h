@@ -7,14 +7,15 @@
 
 class Player
 {
+public:
     static int count;
     int socket;
-public:
     int id;
     std::string name;
     std::vector<Card> hand;
     Player();
     Player(std::string a, int socket);
+    int CloseSocket();
 //    Player(std::string a, socket something);
     int Take(int count, Deck &source);
     int Take(std::vector<Pair> heap);

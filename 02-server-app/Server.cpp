@@ -12,6 +12,7 @@
 #include <fcntl.h>
 #include <sys/epoll.h>
 #include <errno.h>
+#include <iostream>
 
 Server::Server(int port)
 {
@@ -53,6 +54,7 @@ int Server::Wait(int count)
                 client_message[read_size] = '\0';
                 std::string name(client_message);
                 pl.push_back(Player(name, client_sock));
+                std::cout << "Player " << name << " has arrived!" << std::endl;
                 count--;
             }
             else if(read_size == 0)

@@ -9,7 +9,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-    //setlocale(LC_CTYPE, "");
+    setlocale(LC_CTYPE, "");
 
     Server myserv(8888);
     myserv.MakeNonBlocking(myserv.sfd);
@@ -23,6 +23,10 @@ int main(int argc, char *argv[])
     //как только залогинилось n-игроков - заканчивается прослушивание, игра начинается
 
     //игра:
+
+    std::vector<Player> players = myserv.pl;
+    Game g1(players);
+    g1.Play();
 
     /*
     std::vector<Player> players;

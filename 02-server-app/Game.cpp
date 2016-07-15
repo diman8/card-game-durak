@@ -1,17 +1,16 @@
 #include "Game.h"
+#include <json.hpp>
+#include <sys/socket.h>
 
 Game::Game(vector<Player> &pl)
 {
     this->players = pl;
-}
-
-Game::~Game()
-{
+    this->players_all = pl;
+    my = Deck(13,4,0);
 }
 
 int Game::Play()
 {
-    Deck my(13,4,0);
     my.Shuffle();
 
 //    std::vector<Player> players(3);
@@ -29,10 +28,12 @@ int Game::Play()
     }
 
     //Выбирается trump.
-    Card tcard = my.Take();
-    int trump = tcard.suit;
+    tcard = my.Take();
+    trump = tcard.suit;
     cout << "Current trump:" << tcard.Print2() << endl;
     my.Add(tcard);
+
+    SendGameStart();
 
     //Выбирается player с trump наим. значения. Это apl.
     int tmin=100;
@@ -51,12 +52,16 @@ int Game::Play()
     int vpl = (apl+1)%players.size();
     cout << "Player " << players[apl].name << " has lowest trump-card" << endl;
 
+    SendOrder(apl,vpl);
+
     //MAIN LOOP
     while(1)
     {
         bool vpl_take=false;
         //Определяются apl и vpl.
         vector<Pair> heap;
+
+        SendGameinfo(&heap);
 
 //        APL LOOP
 //            apl кладет карту(ы), проверяя есть-ли она в pair_collection (если он не пустой), формируется pair
@@ -173,3 +178,68 @@ int Game::Play()
         }
     }
 }
+
+int Game::SendToAll(string message)
+{
+    nlohmann::json data;
+    data["signal"]="consolelog";
+    data["message"]=message;
+    string snd = data.dump();
+    for (Player &pl : players)
+    {
+        send(pl.socket,snd.c_str(),snd.size(),0);
+    }
+}
+/*
+int Game::SendGameStart()
+{
+    nlohmann::json data;
+    data["signal"]="gamestart";
+    data["trumpcard"]={this->tcard.face, this->tcard.suit};
+    for (int i=0; i<this->players.size(); i++)
+    {
+        data["players"][i]={{"name",players[i].name},{"id",players[i].id},{"cards",players[i].hand.size()}};
+    }
+    for (Player &pl : this->players)
+    {
+        nlohmann::json data2 = data;
+        for (int i=0; i<pl.hand.size(); i++)
+            data2["hand"][i]={pl.hand[i].face, pl.hand[i].suit};
+        cout << data2.dump() << endl;
+    }
+}
+*/
+int Game::SendOrder(int apl, int vpl)
+{
+    nlohmann::json data;
+    data["signal"]="order";
+    data["apl"] = apl;
+    data["vpl"] = vpl;
+    cout << data.dump() << endl;
+}
+
+int Game::SendGameinfo(vector<Pair> heap)
+{
+    nlohmann::json data;
+    data["signal"]="gameinfo";
+    data["trumpcard"]={this->tcard.face, this->tcard.suit};
+    for (int i=0; i<this->players.size(); i++)
+    {
+        data["players"][i]={{"name",players[i].name},{"id",players[i].id},{"cards",players[i].hand.size()}};
+    }
+    for (int i=0; i<heap.size(); i++)
+    {
+        data["pairs"][i]["f"] = {Pair.first->face, Pair.first->suit};
+        data["pairs"][i]["s"] = {Pair.second->face, Pair.second->suit};
+    }
+    for (Player &pl : this->players)
+    {
+        nlohmann::json data2 = data;
+        for (int i=0; i<pl.hand.size(); i++)
+            data2["hand"][i]={pl.hand[i].face, pl.hand[i].suit};
+        cout << data2.dump() << endl;
+    }
+}
+
+
+
