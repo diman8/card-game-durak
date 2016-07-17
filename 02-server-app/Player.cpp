@@ -69,6 +69,7 @@ std::shared_ptr<Card> Player::Thrown() //вызывается при 1ом хо�
             if ((choise >= 0) && (choise < this->hand.size()))
             {
                 nlohmann::json dataa;
+                dataa["signal"]="status";
                 dataa["status"]="ok";
                 tmp = dataa.dump();
                 send(this->socket,tmp.c_str(),tmp.size(),0);
@@ -79,6 +80,7 @@ std::shared_ptr<Card> Player::Thrown() //вызывается при 1ом хо�
             }
         }
         nlohmann::json dataa;
+        dataa["signal"]="status";
         dataa["status"]="bad";
         send(this->socket,tmp.c_str(),tmp.size(),0);
     }
@@ -112,6 +114,7 @@ std::shared_ptr<Card> Player::Thrown(vector<Pair> &heap) //при 2ых и по�
             if (choise == -1)
             {
                 nlohmann::json dataa;
+                dataa["signal"]="status";
                 dataa["status"]="ok";
                 tmp = dataa.dump();
                 send(this->socket,tmp.c_str(),tmp.size(),0);
@@ -125,6 +128,7 @@ std::shared_ptr<Card> Player::Thrown(vector<Pair> &heap) //при 2ых и по�
                     if (hand[choise].face == stack[i].face)
                     {
                         nlohmann::json dataa;
+                        dataa["signal"]="status";
                         dataa["status"]="ok";
                         tmp = dataa.dump();
                         send(this->socket,tmp.c_str(),tmp.size(),0);
@@ -137,7 +141,9 @@ std::shared_ptr<Card> Player::Thrown(vector<Pair> &heap) //при 2ых и по�
             }
         }
         nlohmann::json dataa;
+        dataa["signal"]="status";
         dataa["status"]="bad";
+        tmp = dataa.dump();
         send(this->socket,tmp.c_str(),tmp.size(),0);
     }
 }
@@ -162,6 +168,7 @@ int Player::Answer(Pair &current, int trump)
             if (choise == -1)
             {
                 nlohmann::json dataa;
+                dataa["signal"]="status";
                 dataa["status"]="ok";
                 tmp = dataa.dump();
                 send(this->socket,tmp.c_str(),tmp.size(),0);
@@ -173,6 +180,7 @@ int Player::Answer(Pair &current, int trump)
                 if (current.Beat(std::make_shared<Card>(hand[choise]), trump))
                 {
                     nlohmann::json dataa;
+                    dataa["signal"]="status";
                     dataa["status"]="ok";
                     tmp = dataa.dump();
                     send(this->socket,tmp.c_str(),tmp.size(),0);
@@ -183,7 +191,9 @@ int Player::Answer(Pair &current, int trump)
             }
         }
         nlohmann::json dataa;
+        dataa["signal"]="status";
         dataa["status"]="bad";
+        tmp = dataa.dump();
         send(this->socket,tmp.c_str(),tmp.size(),0);
     }
 }

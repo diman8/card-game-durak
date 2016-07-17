@@ -29,11 +29,13 @@ public:
     int Play();
     int SendToAll(string message);
     //int SendGameStart();
-    int SendGameinfo(vector<Pair> heap);
+    int SendGameinfo();
     int SendOrder(int apl, int vpl);
-    int SendTurnV(int plid, Card temp);
-    int SendTurnA(int plid, Card temp);
-    int SendPlayerDone(bool win=true);
+    int SendTurnV(int plid, std::shared_ptr<Card> temp);
+    int SendTurnA(int plid, std::shared_ptr<Card> temp);
+    int SendTurnEnd();
+    int SendPairs(vector<Pair> heap);
+    int SendPlayerDone(int plid, bool win);
 };
 
 #endif // GAME_H
