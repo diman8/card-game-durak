@@ -12,6 +12,7 @@ public:
     Server(int port);
     int Wait(int count);
     int MakeNonBlocking(int fd);
+    int CloseSocket();
 };
 
 #endif // SERVER_H

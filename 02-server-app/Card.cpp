@@ -7,7 +7,7 @@ Card::Card(){}
 Card::Card(unsigned short face, unsigned short suit)
 {
     id = count++;
-    this->face=face;
+    this->face=face+globals::sdeck*4;
     this->suit=suit;
 }
 

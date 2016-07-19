@@ -1,12 +1,16 @@
 #include "Game.h"
-#include <json.hpp>
+#include "globals.h"
+#include "json.hpp"
 #include <sys/socket.h>
 
 Game::Game(vector<Player> &pl)
 {
     this->players = pl;
     this->players_all = pl;
-    my = Deck(13,4,0);
+    if (globals::sdeck)
+        my = Deck(8,4,0);
+    else
+        my = Deck(13,4,0);
 }
 
 int Game::Play()
@@ -139,8 +143,7 @@ int Game::Play()
 
         //Идет добор cards до 6ти (если это возможно).
         //Если у player нет cards - он выходит из players.
-        cout << "End of a turn" << endl;
-        SendTurnEnd();
+
         //apl берет первым
         if (players[apl].hand.size() < 6)
             players[apl].Take((6-players[apl].hand.size()),my);
@@ -173,6 +176,10 @@ int Game::Play()
                 }
                 i=(i-1)%players.size();
             }
+            else
+            {
+                players[i].Sort();
+            }
         }
 //        Когда в players остался 1 player - он считается проигравшим.
         if (players.size() == 1)
@@ -192,6 +199,9 @@ int Game::Play()
             apl = vpl;
             vpl = (apl+1)%players.size();
         }
+
+        cout << "End of a turn" << endl;
+        SendTurnEnd();
     }
 }
 
@@ -321,11 +331,14 @@ int Game::SendPlayerDone(int plid, bool win)
 
     cout << data.dump() << endl;
 
-    for (Player &pl : this->players)
-    {
-        tmp = data.dump();
-        send(pl.socket,tmp.c_str(),tmp.size(),0);
-    }
+    tmp = data.dump();
+    send(players[plid].socket,tmp.c_str(),tmp.size(),0);
+
+//    for (Player &pl : this->players)
+//    {
+//        tmp = data.dump();
+//        send(pl.socket,tmp.c_str(),tmp.size(),0);
+//    }
 }
 
 int Game::SendTurnEnd()

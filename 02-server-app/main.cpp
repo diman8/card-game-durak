@@ -5,13 +5,32 @@
 #include <memory>
 #include "Game.h"
 #include "Server.h"
+#include "getopt.h"
 using namespace std;
 
 int main(int argc, char *argv[])
 {
     setlocale(LC_CTYPE, "");
 
-    Server myserv(8888);
+    //передаваемые параметры
+    int param=0;
+    while ((param = getopt(argc,argv,"p:sb")) != -1)
+    {
+        switch(param)
+        {
+        case 'b':
+            globals::sdeck=0;
+            break;
+        case 's':
+            globals::sdeck=1;
+            break;
+        case 'p':
+            globals::port=atoi(optarg);
+        }
+    }
+
+
+    Server myserv(globals::port);
     myserv.MakeNonBlocking(myserv.sfd);
     myserv.Wait(2);
 
@@ -26,8 +45,21 @@ int main(int argc, char *argv[])
 
     std::vector<Player> players = myserv.pl;
     Game g1(players);
-    g1.Play();
+    try
+    {
+        g1.Play();
+    }
+    catch(const invalid_argument& ia)
+    {
+        cout << "Invalid argument: " << ia.what() << endl;
+        cout << "Server is shooting down." << endl;
+    }
 
+    for (Player &pl: players)
+    {
+        pl.CloseSocket();
+    }
+    myserv.CloseSocket();
     /*
     std::vector<Player> players;
     players.push_back(Player("Vasya", 10));

@@ -13,7 +13,7 @@ onready var pllist = get_node("GameList")
 func _ready():
 	get_node("Log").set_readonly(true)
 	get_node("connect").show()
-	get_node("connect").set_pos(OS.get_window_size()/2-get_node("connect").get_size()/2)
+	#get_node("connect").set_pos(OS.get_window_size()/2-get_node("connect").get_size()/2)
 	#set_fixed_process(true)
 	#get_hand()
 	#draw_deck()
@@ -21,14 +21,18 @@ func _ready():
 
 func _on_Connect_pressed():
 	server.connect(get_node("connect/ip").get_text(), int(get_node("connect/port").get_text()))
+	get_node("Timer").start()
+	while(1):
+		if server.get_status() == 2:
+			break
 	if (server.get_status() == 2):
 		get_node("Log").insert_text_at_cursor("success connection to " + get_node("connect/ip").get_text() + ":" + get_node("connect/port").get_text() + "\n")
 		get_node("connect").hide()
 		server.put_data(get_node("connect/player_name").get_text().to_utf8())	
 		get_node("PopupMenu 2").show()
-		get_node("PopupMenu 2").set_pos(OS.get_window_size()/2-get_node("PopupMenu 2").get_size()/2)
+		#get_node("PopupMenu 2").set_pos(OS.get_window_size()/2-get_node("PopupMenu 2").get_size()/2)
 	else:
-		get_node("Log").insert_text_at_cursor("error on connecting to server\n")
+		get_node("Log").insert_text_at_cursor("error on connecting to server" + get_node("connect/ip").get_text() + str(get_node("connect/port").get_text()) +"\n")
 
 func get_hand():
 	#я хочу чтобы все карты помещались в 700px.
@@ -59,11 +63,13 @@ func draw_deck(size):
 		return
 	else:
 		get_node("Deck/trump").show()
-		for i in range(0,size/4):
+		var dr = size/4
+		if dr<1:
+			dr=1
+		for i in range(0,dr):
 			var tmp = card.instance()
 			cards.add_child(tmp)
 			tmp.set_pos(Vector2(-i,-i))
-
 
 
 func _on_Listener_timeout():
@@ -128,7 +134,10 @@ func s_turnv(dict):
 		update_pl_list()
 
 func s_done(dict):
-	pass
+	if dict["win"]==true:
+		get_node("win_screen").show()
+	elif dict["win"]==false:
+		get_node("lose_screen").show()
 
 func s_status(dict):
 	if dict["status"]=="ok": # and action!=""

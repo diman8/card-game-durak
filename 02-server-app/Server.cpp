@@ -16,11 +16,16 @@
 
 Server::Server(int port)
 {
-    int socket_desc;
+    int socket_desc, yes=1;
     struct sockaddr_in server;
     if ((socket_desc = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
         printf("Could not create socket");
+    }
+
+    if (setsockopt(socket_desc,SOL_SOCKET,SO_REUSEADDR,&yes,sizeof(int)) == -1) {
+        perror("setsockopt");
+        exit(1);
     }
 
     server.sin_family = AF_INET;
@@ -120,4 +125,9 @@ int Server::MakeNonBlocking(int fd)
     }
 
     return 0;
+}
+
+int Server::CloseSocket()
+{
+    close(this->sfd);
 }
