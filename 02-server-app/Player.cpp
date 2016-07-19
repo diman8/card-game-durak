@@ -88,6 +88,9 @@ std::shared_ptr<Card> Player::Thrown() //вызывается при 1ом хо�
 
 std::shared_ptr<Card> Player::Thrown(vector<Pair> &heap) //при 2ых и последующих
 {
+    if (this->hand.size()==0)
+        return nullptr;
+
     vector<Card> stack;
     for (int i=0; i<heap.size();i++)
     {

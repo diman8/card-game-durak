@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 
     //передаваемые параметры
     int param=0;
-    while ((param = getopt(argc,argv,"p:sb")) != -1)
+    while ((param = getopt(argc,argv,"p:sbc:")) != -1)
     {
         switch(param)
         {
@@ -26,12 +26,14 @@ int main(int argc, char *argv[])
             break;
         case 'p':
             globals::port=atoi(optarg);
+        case 'c':
+            globals::count=atoi(optarg);
         }
     }
 
 
     Server myserv(globals::port);
-    myserv.MakeNonBlocking(myserv.sfd);
+    //myserv.MakeNonBlocking(myserv.sfd);
     myserv.Wait(2);
 
     //Класс Server - там все взаимодействие

@@ -5,6 +5,7 @@
 #include <string>
 
 namespace globals {
+    extern int count;
     extern int port;
     extern int sdeck;
     extern std::string cfaces[];

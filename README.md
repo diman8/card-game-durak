@@ -24,3 +24,4 @@
 2. [JSON-библиотека для C++](https://github.com/nlohmann/json)
 3. [Godot Engine](http://godotengine.org/)
 4. [UTF-8 & UTF-16 in C++11](http://stackoverflow.com/questions/148403/utf8-to-from-wide-char-conversion-in-stl)
+5. [Игральные карты разных лет](http://valhalla.ulver.com/f49/t2977-4.html)
