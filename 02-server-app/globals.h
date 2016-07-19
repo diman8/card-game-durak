@@ -5,6 +5,7 @@
 #include <string>
 
 namespace globals {
+    extern int comp;
     extern int count;
     extern int port;
     extern int sdeck;

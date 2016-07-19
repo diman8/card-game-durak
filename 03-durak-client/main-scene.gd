@@ -6,25 +6,31 @@ var gl_lapl
 var gl_vpl
 var action=""
 var server = StreamPeerTCP.new()
-#var server_listener = Thread.new()
+var timer = Thread.new()
 var players=[]
 onready var pllist = get_node("GameList")
+var acc_timer=0.0
 
 func _ready():
 	get_node("Log").set_readonly(true)
 	get_node("connect").show()
+	#set_process(true)
 	#get_node("connect").set_pos(OS.get_window_size()/2-get_node("connect").get_size()/2)
-	#set_fixed_process(true)
+	set_fixed_process(true)
 	#get_hand()
 	#draw_deck()
 
 
 func _on_Connect_pressed():
 	server.connect(get_node("connect/ip").get_text(), int(get_node("connect/port").get_text()))
-	get_node("Timer").start()
-	while(1):
+	acc_timer=0
+	while(acc_timer < 6000):
+		acc_timer+=1
 		if server.get_status() == 2:
 			break
+		print (acc_timer)
+	#set_process(false)
+	acc_timer=0
 	if (server.get_status() == 2):
 		get_node("Log").insert_text_at_cursor("success connection to " + get_node("connect/ip").get_text() + ":" + get_node("connect/port").get_text() + "\n")
 		get_node("connect").hide()
@@ -33,6 +39,10 @@ func _on_Connect_pressed():
 		#get_node("PopupMenu 2").set_pos(OS.get_window_size()/2-get_node("PopupMenu 2").get_size()/2)
 	else:
 		get_node("Log").insert_text_at_cursor("error on connecting to server" + get_node("connect/ip").get_text() + str(get_node("connect/port").get_text()) +"\n")
+
+func fixed_process(delta):
+	acc_timer+=delta
+	print("a")
 
 func get_hand():
 	#я хочу чтобы все карты помещались в 700px.
@@ -157,7 +167,7 @@ func s_thrown(dict):
 	if !dict["first"]:
 		get_node("hand/refuse").set_disabled(false)
 		get_node("hand/refuse").set_text("Refuse")
-	get_node("action").set_text("Trown")
+	get_node("action").set_text("Thrown")
 
 func s_answer(dict):
 	action="A"
@@ -248,3 +258,9 @@ func rearrange():
 		var tmp = hand.get_child(i)
 		tmp.set_pos(Vector2(offset*(i+1),0))
 		tmp.id=i
+	var heap = get_node("Pairs")
+	size=heap.get_child_count()
+	for i in range(0,size):
+		heap.get_child(i).set_pos(Vector2(offset*i,0))
+
+

@@ -2,12 +2,13 @@
 #define SERVER_H
 #include <vector>
 #include <string>
+#include <memory>
 #include "Player.h"
 
 class Server
 {
 public:
-    std::vector<Player> pl;
+    std::vector<std::shared_ptr<Player>> pl;
     int sfd;
     Server(int port);
     int Wait(int count);

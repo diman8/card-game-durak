@@ -19,13 +19,13 @@ using namespace std;
 class Game
 {
 public:
-    vector<Player> players;
-    vector<Player> players_all;
+    vector<std::shared_ptr<Player>> players;
+    //vector<std::shared_ptr<Player>> players_all;
     Deck my;
     int trump;
     Card tcard;
     int apl,vpl;
-    Game(vector<Player> &pl);
+    Game(vector<std::shared_ptr<Player>> &pl);
     int Play();
     int SendToAll(string message);
     //int SendGameStart();

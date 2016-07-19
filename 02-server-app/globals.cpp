@@ -1,5 +1,6 @@
 #include "globals.h"
 namespace globals {
+    int comp = 0;
     int port = 8888;
     int sdeck = 1;
     int count = 2;

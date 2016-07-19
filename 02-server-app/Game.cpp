@@ -3,12 +3,12 @@
 #include "json.hpp"
 #include <sys/socket.h>
 
-Game::Game(vector<Player> &pl)
+Game::Game(vector<std::shared_ptr<Player>> &pl)
 {
     this->players = pl;
-    this->players_all = pl;
+    //this->players_all = pl;
     if (globals::sdeck)
-        my = Deck(8,4,0);
+        my = Deck(9,4,0);
     else
         my = Deck(13,4,0);
 }
@@ -25,10 +25,10 @@ int Game::Play()
     //GAEM
 
     //Всем players раздается по 6 cards.
-    for (Player &pl:players)
+    for (std::shared_ptr<Player> pl:players)
     {
-        pl.Take(6,my);
-        pl.Sort();
+        pl->Take(6,my);
+        pl->Sort();
     }
 
     //Выбирается trump.
@@ -44,17 +44,17 @@ int Game::Play()
     int apl=0;
     for (int i=0; i<players.size(); i++)
     {
-        for (int j=0; j<players[i].hand.size();j++)
+        for (int j=0; j<players[i]->hand.size();j++)
         {
-            if ((players[i].hand[j].suit == trump)&&(players[i].hand[j].face < tmin))
+            if ((players[i]->hand[j].suit == trump)&&(players[i]->hand[j].face < tmin))
             {
-                tmin = players[i].hand[j].face;
+                tmin = players[i]->hand[j].face;
                 apl = i;
             }
         }
     };
     int vpl = (apl+1)%players.size();
-    cout << "Player " << players[apl].name << " has lowest trump-card" << endl;
+    cout << "Player " << players[apl]->name << " has lowest trump-card" << endl;
 
     //MAIN LOOP
     while(1)
@@ -70,13 +70,13 @@ int Game::Play()
 //            apl кладет карту(ы), проверяя есть-ли она в pair_collection (если он не пустой), формируется pair
 //            vpl дополняет pair, либо берет все карты из нее.
 //        APL LOOP END
-        shared_ptr<Card> temp = players[apl].Thrown();
+        shared_ptr<Card> temp = players[apl]->Thrown();
         SendTurnA(apl,temp);
         heap.push_back(Pair(temp));
 
-        if (players[vpl].Answer(heap[heap.size()-1], trump) == 1)
+        if (players[vpl]->Answer(heap[heap.size()-1], trump) == 1)
         {
-            players[vpl].Take(heap);
+            players[vpl]->Take(heap);
             vpl_take = true;
             SendTurnV(vpl, nullptr);
         }
@@ -91,7 +91,7 @@ int Game::Play()
 //            vpl отбивается, либо забирает все pair со стола.
 //            Если отбивается - все pair уходят в trash.
 //        ALL LOOP END
-        if ((!vpl_take)&&(players[vpl].hand.size()!=0))
+        if ((!vpl_take)&&(players[vpl]->hand.size()!=0))
         {
             int lapl=apl;
             while(1)
@@ -103,7 +103,7 @@ int Game::Play()
 
                     if (j == vpl) continue;
 
-                    shared_ptr<Card> temp = players[j].Thrown(heap);
+                    shared_ptr<Card> temp = players[j]->Thrown(heap);
                     SendTurnA(j,temp);
                     if (temp == nullptr)
                     {
@@ -119,9 +119,9 @@ int Game::Play()
                 }
                 if (heap[heap.size()-1].second == nullptr)
                 {
-                    if (players[vpl].Answer(heap[heap.size()-1], trump) == 1)
+                    if (players[vpl]->Answer(heap[heap.size()-1], trump) == 1)
                     {
-                        players[vpl].Take(heap);
+                        players[vpl]->Take(heap);
                         vpl_take = true;
                         SendTurnV(vpl, nullptr);
                         break;
@@ -129,7 +129,7 @@ int Game::Play()
                     else
                     {
                         SendTurnV(vpl, std::make_shared<Card>(*heap[heap.size()-1].second));
-                        if (players[vpl].hand.size() == 0)
+                        if (players[vpl]->hand.size() == 0)
                             break;
                     }
                 }
@@ -145,24 +145,24 @@ int Game::Play()
         //Если у player нет cards - он выходит из players.
 
         //apl берет первым
-        if (players[apl].hand.size() < 6)
-            players[apl].Take((6-players[apl].hand.size()),my);
+        if (players[apl]->hand.size() < 6)
+            players[apl]->Take((6-players[apl]->hand.size()),my);
 
         for (int i=(apl+2)%players.size(); i!=apl; i=(i+1)%players.size())
         {
             if (i == vpl) continue;
 
-            if (players[i].hand.size() < 6)
-                players[i].Take((6-players[i].hand.size()),my);
+            if (players[i]->hand.size() < 6)
+                players[i]->Take((6-players[i]->hand.size()),my);
         }
         //vpl берет последним
-        if (players[vpl].hand.size() < 6)
-            players[vpl].Take((6-players[vpl].hand.size()),my);
+        if (players[vpl]->hand.size() < 6)
+            players[vpl]->Take((6-players[vpl]->hand.size()),my);
 
         //удаление игрока из вектора
         for (int i=0;i<players.size();i++)
         {
-            if (players[i].hand.size() == 0)
+            if (players[i]->hand.size() == 0)
             {
                 SendPlayerDone(i, true);
                 players.erase(players.begin() + i);
@@ -178,14 +178,14 @@ int Game::Play()
             }
             else
             {
-                players[i].Sort();
+                players[i]->Sort();
             }
         }
 //        Когда в players остался 1 player - он считается проигравшим.
         if (players.size() == 1)
         {
             SendPlayerDone(0, false);
-            cout << "Player " << players[0].name << " is a durak!" << endl;
+            cout << "Player " << players[0]->name << " is a durak!" << endl;
             break;
         }
         else if (players.size() == 0)
@@ -197,8 +197,12 @@ int Game::Play()
         if (!vpl_take)
         {
             apl = vpl;
-            vpl = (apl+1)%players.size();
         }
+        else
+        {
+            apl = (vpl+1)%players.size();
+        }
+        vpl = (apl+1)%players.size();
 
         cout << "End of a turn" << endl;
         SendTurnEnd();
@@ -211,9 +215,9 @@ int Game::SendToAll(string message)
     data["signal"]="consolelog";
     data["message"]=message;
     string snd = data.dump();
-    for (Player &pl : players)
+    for (std::shared_ptr<Player> pl : players)
     {
-        send(pl.socket,snd.c_str(),snd.size(),0);
+        pl->Send(snd);
     }
 }
 /*
@@ -244,10 +248,10 @@ int Game::SendOrder(int lapl, int vpl)
     data["vpl"] = vpl;
 
     cout << data.dump() << endl;
-    for (Player &pl : this->players)
+    for (std::shared_ptr<Player> pl : this->players)
     {
         tmp = data.dump();
-        send(pl.socket,tmp.c_str(),tmp.size(),0);
+        pl->Send(tmp);
     }
 }
 
@@ -260,22 +264,22 @@ int Game::SendGameinfo()
     data["trumpcard"]={this->tcard.face, this->tcard.suit};
     for (int i=0; i<this->players.size(); i++)
     {
-        data["players"][i]={{"name",players[i].name},{"id",players[i].id},{"cards",players[i].hand.size()}};
+        data["players"][i]={{"name",players[i]->name},{"id",players[i]->id},{"cards",players[i]->hand.size()}};
     }
 //    for (int i=0; i<heap.size(); i++)
 //    {
 //        data["pairs"][i]["f"] = {heap[i].first->face, heap[i].first->suit};
 //        data["pairs"][i]["s"] = {heap[i].second->face, heap[i].second->suit};
 //    }
-    for (Player &pl : this->players)
+    for (std::shared_ptr<Player> pl : this->players)
     {
         nlohmann::json data2 = data;
-        for (int i=0; i<pl.hand.size(); i++)
-            data2["hand"][i]={pl.hand[i].face, pl.hand[i].suit};
+        for (int i=0; i<pl->hand.size(); i++)
+            data2["hand"][i]={pl->hand[i].face, pl->hand[i].suit};
         cout << data2.dump() << endl;
 
         tmp = data2.dump();
-        send(pl.socket,tmp.c_str(),tmp.size(),0);
+        pl->Send(tmp);
     }
 }
 
@@ -291,10 +295,10 @@ int Game::SendTurnA(int plid, std::shared_ptr<Card> temp)
         data["card"]={temp->face, temp->suit};
 
     cout << data.dump() << endl;
-    for (Player &pl : this->players)
+    for (std::shared_ptr<Player> pl : this->players)
     {
         tmp = data.dump();
-        send(pl.socket,tmp.c_str(),tmp.size(),0);
+        pl->Send(tmp);
     }
 }
 
@@ -311,10 +315,10 @@ int Game::SendTurnV(int plid, std::shared_ptr<Card> temp)
         data["card"]={temp->face, temp->suit};
 
     cout << data.dump() << endl;
-    for (Player &pl : this->players)
+    for (std::shared_ptr<Player> pl : this->players)
     {
         tmp = data.dump();
-        send(pl.socket,tmp.c_str(),tmp.size(),0);
+        pl->Send(tmp);
     }
 }
 
@@ -332,7 +336,7 @@ int Game::SendPlayerDone(int plid, bool win)
     cout << data.dump() << endl;
 
     tmp = data.dump();
-    send(players[plid].socket,tmp.c_str(),tmp.size(),0);
+    players[plid]->Send(tmp);
 
 //    for (Player &pl : this->players)
 //    {
@@ -349,10 +353,10 @@ int Game::SendTurnEnd()
 
     cout << data.dump() << endl;
 
-    for (Player &pl : this->players)
+    for (std::shared_ptr<Player> pl : this->players)
     {
         tmp = data.dump();
-        send(pl.socket,tmp.c_str(),tmp.size(),0);
+        pl->Send(tmp);
     }
 }
 
@@ -373,14 +377,14 @@ int Game::SendPairs(vector<Pair> heap)
             data["pairs"][i]["s"] = 0;
         }
     }
-    for (Player &pl : this->players)
+    for (std::shared_ptr<Player> pl : this->players)
     {
         nlohmann::json data2 = data;
-        for (int i=0; i<pl.hand.size(); i++)
-            data2["hand"][i]={pl.hand[i].face, pl.hand[i].suit};
+        for (int i=0; i<pl->hand.size(); i++)
+            data2["hand"][i]={pl->hand[i].face, pl->hand[i].suit};
         cout << data2.dump() << endl;
 
         tmp = data2.dump();
-        send(pl.socket,tmp.c_str(),tmp.size(),0);
+        pl->Send(tmp);
     }
 }

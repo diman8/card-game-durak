@@ -1,9 +1,11 @@
 #include "Server.h"
+#include "Player.h"
+#include "HPlayer.h"
 #include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-
+#include <memory>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
@@ -58,7 +60,7 @@ int Server::Wait(int count)
             {
                 client_message[read_size] = '\0';
                 std::string name(client_message);
-                pl.push_back(Player(name, client_sock));
+                pl.push_back(std::make_shared<HPlayer>(HPlayer(name, client_sock)));
                 std::cout << "Player " << name << " has arrived!" << std::endl;
                 count--;
             }

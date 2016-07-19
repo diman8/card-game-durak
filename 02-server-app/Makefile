@@ -55,7 +55,9 @@ SOURCES       = main.cpp \
 		Player.cpp \
 		globals.cpp \
 		Game.cpp \
-		Server.cpp 
+		Server.cpp \
+		CPlayer.cpp \
+		HPlayer.cpp 
 OBJECTS       = main.o \
 		Card.o \
 		Deck.o \
@@ -63,7 +65,9 @@ OBJECTS       = main.o \
 		Player.o \
 		globals.o \
 		Game.o \
-		Server.o
+		Server.o \
+		CPlayer.o \
+		HPlayer.o
 DIST          = ../../Qt/5.7/gcc_64/mkspecs/features/spec_pre.prf \
 		../../Qt/5.7/gcc_64/mkspecs/common/unix.conf \
 		../../Qt/5.7/gcc_64/mkspecs/common/linux.conf \
@@ -213,14 +217,18 @@ DIST          = ../../Qt/5.7/gcc_64/mkspecs/features/spec_pre.prf \
 		Player.h \
 		globals.h \
 		Game.h \
-		Server.h main.cpp \
+		Server.h \
+		CPlayer.h \
+		HPlayer.h main.cpp \
 		Card.cpp \
 		Deck.cpp \
 		Pair.cpp \
 		Player.cpp \
 		globals.cpp \
 		Game.cpp \
-		Server.cpp
+		Server.cpp \
+		CPlayer.cpp \
+		HPlayer.cpp
 QMAKE_TARGET  = durak-0407
 DESTDIR       = 
 TARGET        = durak-0407
@@ -610,8 +618,25 @@ Server.o: Server.cpp Server.h \
 		Deck.h \
 		Card.h \
 		globals.h \
-		Pair.h
+		Pair.h \
+		HPlayer.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Server.o Server.cpp
+
+CPlayer.o: CPlayer.cpp CPlayer.h \
+		Player.h \
+		Deck.h \
+		Card.h \
+		globals.h \
+		Pair.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o CPlayer.o CPlayer.cpp
+
+HPlayer.o: HPlayer.cpp HPlayer.h \
+		Player.h \
+		Deck.h \
+		Card.h \
+		globals.h \
+		Pair.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o HPlayer.o HPlayer.cpp
 
 ####### Install
 

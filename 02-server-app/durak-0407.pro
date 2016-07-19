@@ -10,7 +10,9 @@ SOURCES += main.cpp \
     Player.cpp \
     globals.cpp \
     Game.cpp \
-    Server.cpp
+    Server.cpp \
+    CPlayer.cpp \
+    HPlayer.cpp
 
 HEADERS += \
     Card.h \
@@ -19,4 +21,6 @@ HEADERS += \
     Player.h \
     globals.h \
     Game.h \
-    Server.h
+    Server.h \
+    CPlayer.h \
+    HPlayer.h

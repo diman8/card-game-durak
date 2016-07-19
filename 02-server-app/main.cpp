@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Deck.h"
 #include "Player.h"
+#include "CPlayer.h"
 #include <cstdlib>
 #include <memory>
 #include "Game.h"
@@ -14,28 +15,32 @@ int main(int argc, char *argv[])
 
     //передаваемые параметры
     int param=0;
-    while ((param = getopt(argc,argv,"p:sbc:")) != -1)
+    while ((param = getopt(argc,argv,"BSp:h:b:")) != -1)
     {
         switch(param)
         {
-        case 'b':
+        case 'B':
             globals::sdeck=0;
             break;
-        case 's':
+        case 'S':
             globals::sdeck=1;
             break;
         case 'p':
             globals::port=atoi(optarg);
-        case 'c':
+            break;
+        case 'h':
             globals::count=atoi(optarg);
+            break;
+        case 'b':
+            globals::comp=atoi(optarg);
+            break;
         }
     }
 
 
     Server myserv(globals::port);
     //myserv.MakeNonBlocking(myserv.sfd);
-    myserv.Wait(2);
-
+    myserv.Wait(globals::count);
     //Класс Server - там все взаимодействие
     //не буду использовать неблокирующие вызовы
     //хотя может и буду, но не epoll
@@ -45,7 +50,12 @@ int main(int argc, char *argv[])
 
     //игра:
 
-    std::vector<Player> players = myserv.pl;
+    vector<std::shared_ptr<Player>> players = myserv.pl;
+    for (int i=0; i<globals::comp; i++)
+    {
+        players.push_back(std::make_shared<CPlayer>(CPlayer()));
+    }
+
     Game g1(players);
     try
     {
@@ -57,9 +67,9 @@ int main(int argc, char *argv[])
         cout << "Server is shooting down." << endl;
     }
 
-    for (Player &pl: players)
+    for (std::shared_ptr<Player> pl: players)
     {
-        pl.CloseSocket();
+        pl->CloseSocket();
     }
     myserv.CloseSocket();
     /*
