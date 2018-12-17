@@ -27,3 +27,8 @@
 3. [Godot Engine](http://godotengine.org/)
 4. [UTF-8 & UTF-16 in C++11](http://stackoverflow.com/questions/148403/utf8-to-from-wide-char-conversion-in-stl)
 5. [Игральные карты разных лет](http://valhalla.ulver.com/f49/t22376.html)
+
+## Screenshots
+![Screenshot 1](https://raw.githubusercontent.com/diman8/card-game-durak/master/imgs/1.jpg)
+![Screenshot 2](https://raw.githubusercontent.com/diman8/card-game-durak/master/imgs/2.jpg)
+![Screenshot 3](https://raw.githubusercontent.com/diman8/card-game-durak/master/imgs/3.jpg)
